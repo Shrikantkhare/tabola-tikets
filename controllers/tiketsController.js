@@ -56,5 +56,27 @@ const createTikets= async function(req,res){
     }
   }  
 
+  const gettiketsbyid=async function(req,res){
+    try {
+      const { id } = req.params;
+      console.log(id)
+      const { page = 1, limit = 10 } = req.query;
+  
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      
+      const totalCount = await tiketsModel.countDocuments({ _id: id });
+      const tickets = await tiketsModel.find({ _id: id })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .sort({ createdOn: -1 });
+  
+      res.status(200).json({ tickets, totalCount });
+    } catch (err) {
+      console.error('Failed to fetch Tambola tickets', err);
+      res.status(500).json({ error: 'Failed to fetch Tambola tickets' });
+    }
+  }
+
 module.exports.createTikets = createTikets,
-module.exports.getTikets= getTikets
+module.exports.getTikets= getTikets,
+module.exports.gettiketsbyid=gettiketsbyid
